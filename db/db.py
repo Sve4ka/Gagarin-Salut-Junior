@@ -16,7 +16,7 @@ def db_start():
                 "email VARCHAR(25),"
                 "password VARCHAR(25)), "
                 "token VARCHAR(200),"
-                "url_conn VARCHAR(300),")
+                "url_conn VARCHAR(300)")
     conn.commit()
 
 
@@ -97,3 +97,5 @@ def ret_data_dead(id: int) -> tuple:
 
 def search_id_user_by_email(email: str) -> tuple:
     return answer_bd("select * from user_table where email=%s", email)[0][0]
+
+# def get_token(id_user: int) -> str:

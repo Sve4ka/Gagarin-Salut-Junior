@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 import httpx
 import db.db as db
-import secrets
+
 
 app = FastAPI()
 
@@ -16,7 +16,7 @@ class LoginData(BaseModel):
 
 @app.post("/get-access-token/")
 async def get_access_token(login_data: LoginData):
-    url = "https://mc.dev.rand.agency/api/v1/get-access-token"
+    url = "https://mc.dev.rand.agency/api/v1/"
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json;charset=UTF-8"
@@ -82,6 +82,3 @@ async def add_comment(comment_data: CommentData, token: get_access_token):
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code, detail="Error")
         return response.json()
-
-
-
