@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 import httpx
+import db.db as db
+import secrets
 
 app = FastAPI()
 
@@ -23,7 +25,10 @@ async def get_access_token(login_data: LoginData):
         response = await client.post(url, json=login_data.dict(), headers=headers)
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code, detail=response.text)
-        return response.json()
+        access_token = response.json()
+        db.add_db("UPDATE user_table SET access_token=%s WHERE id_user=%s",
+                  access_token, db.search_id_user_by_email(login_data.dict()["email"]))
+        return access_token
 
 
 # ==================================== поиск страницы
@@ -77,3 +82,6 @@ async def add_comment(comment_data: CommentData, token: get_access_token):
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code, detail="Error")
         return response.json()
+
+
+
