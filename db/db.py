@@ -55,3 +55,4 @@ def search_id_user(id_user: int) -> int:
     if len(users) == 0:
         return 0
     return users[0][0]
+
