@@ -1,5 +1,5 @@
-import os
 import psycopg2 as psql
+import pprint
 from config import NAME_DB, NAME_U, PASS, HOST
 
 conn = psql.connect(dbname=NAME_DB, user=NAME_U,
@@ -16,8 +16,19 @@ def db_start():
                 "email VARCHAR(25))")
     conn.commit()
 
-def add_deader(*args):
-    pass
+
+def db_deader():
+    cur.execute("CREATE TABLE IF NOT EXISTS "
+                "dead_table("
+                "id SERIAL PRIMARY KEY, "
+                "cr_id INTEGER,"
+                "name VARCHAR(35), "
+                "surname VARCHAR(35),"
+                "fathname VARCHAR(35), "
+                "birth date,"
+                "dead date)")
+    conn.commit()
+
 
 def add_db(text: str, *args) -> None:
     connect = psql.connect(dbname=NAME_DB, user=NAME_U, password=PASS, host=HOST)
@@ -38,10 +49,14 @@ def answer_bd(text: str, *args) -> list:
     return answer
 
 
-
 def add_user(id_user: int, phone: str, email: str) -> None:
     sql_query = "insert into user_table values (%s, %s, %s, %s)"
     add_db(sql_query, free_user_id(), id_user, phone, email)
+
+
+def add_deader(*args):
+    sql_query = "insert into dead_table values (%s, %s, %s, %s, %s, %s, %s)"
+    add_db(sql_query, free_deader_id(), search_id_user(args[0]), *args[1:])
 
 
 def free_user_id() -> int:
@@ -49,6 +64,14 @@ def free_user_id() -> int:
     if all_users:
         return max([i[0] for i in all_users]) + 1
     return 1
+
+
+def free_deader_id() -> int:
+    all_users = answer_bd("SELECT * FROM dead_table")
+    if all_users:
+        return max([i[0] for i in all_users]) + 1
+    return 1
+
 
 def search_id_user(id_user: int) -> int:
     users = answer_bd("SELECT * FROM user_table WHERE tg_id=%s", id_user)
