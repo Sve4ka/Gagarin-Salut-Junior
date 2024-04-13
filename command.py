@@ -16,7 +16,7 @@ async def command_start(message: types.Message):
     if search_id_user(message.from_user.id) == 0:
         await message.answer(text=text.START2, reply_markup=kb.start())
     else:
-        await message.answer(text=text.START3)
+        await message.answer(text=text.START3, reply_markup=kb.profile())
     await message.delete()
 
 #

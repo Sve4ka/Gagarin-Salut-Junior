@@ -1,10 +1,13 @@
+from datetime import datetime
+
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import InlineKeyboardButton
+
 from command import dp
-from keyboard import creat_kb as kb
 from db.db import add_deader
+from keyboard import creat_kb as kb
 
 DATA_CR = """
 введите данные человека
@@ -35,12 +38,18 @@ async def update_keyboard(state: FSMContext):
         call = data['callback']
         if sum([1 if i != "None" else 0 for i in [n, s, f, b, d]]) == 5:
             tt = kb.creat_kb()
+            b = datetime.strptime(b, '%d/%m/%Y')
+            d = datetime.strptime(d, '%d/%m/%Y')
             tt.add(InlineKeyboardButton(text='все верно', callback_data="pr_ok"))
             await call.message.edit_text(text="проверьте введенные данные и если все "
                                               "верно нажмите на соответсвующую кнопку \n\n" +
                                               DATA_CR.format(n, s, f, b, d),
                                          reply_markup=tt)
         else:
+            if b == "None":
+                b = "xx/xx/xxxx"
+            if d == "None":
+                d = "xx/xx/xxxx"
             await call.message.edit_text(DATA_CR.format(n, s, f, b, d), reply_markup=kb.creat_kb())
 
 
@@ -75,13 +84,13 @@ async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(text='birth_cr', state="*")
 async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
-    await call.message.edit_text("введите рождение", reply_markup=kb.ret_prof_kb())
+    await call.message.edit_text("введите рождение, в формате дд/мм/гггг", reply_markup=kb.ret_prof_kb())
     await CreatState.birth.set()
 
 
 @dp.callback_query_handler(text='dead_cr', state="*")
 async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
-    await call.message.edit_text("введите смерти", reply_markup=kb.ret_prof_kb())
+    await call.message.edit_text("введите смерти, в формате дд/мм/гггг", reply_markup=kb.ret_prof_kb())
     await CreatState.dead.set()
 
 
@@ -101,7 +110,9 @@ async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
         d = data['dead']
     await state.finish()
     add_deader(call.message.chat.id, n, s, f, b, d)
-    await call.message.edit_text("Данные сохранены\n\n")
+    await call.message.edit_text("Данные сохранены\n\n перейдем в создание эпитафии и биографии, "
+                                 "для этого вам необходимо ответить хотябы на 5 вопросов",
+                                 reply_markup=kb.q_kb())
 
 
 @dp.message_handler(state=CreatState.name)
@@ -129,7 +140,6 @@ async def price_state(message: types.Message, state: FSMContext):
     await update_keyboard(state)
     await message.delete()
     await state.set_state(CreatState.wait.state)
-
 
 
 @dp.message_handler(state=CreatState.birth)
