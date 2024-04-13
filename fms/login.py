@@ -3,8 +3,9 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import InlineKeyboardButton
 
+from api.endpoints import LoginData, get_access_token
 from command import dp
-from db.db import add_user
+from db.db import add_user, add_db
 from keyboard import creat_kb as kb
 
 DATA = """
@@ -44,8 +45,8 @@ async def update_keyboard(state: FSMContext):
 @dp.callback_query_handler(text='start', state="*")
 async def new_fr(call: types.CallbackQuery, state: FSMContext):
     await state.update_data(phone="None")
-    await state.update_data(email="None")
-    await state.update_data(parow="None")
+    await state.update_data(email="team48@hackathon.ru")
+    await state.update_data(parow="tMHwJp5L")
     await state.update_data(callback=call)
     await update_keyboard(state)
 
@@ -79,8 +80,19 @@ async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as data:
         p = data['phone']
         e = data['email']
-    await state.finish()
+        pa = data['parow']
+    L = LoginData
+    L.email = e
+    L.password = pa
+    L.device = 'Iphone7'
     add_user(call.message.chat.id, p, e)
+    if await get_access_token(L) == "error":
+        await call.message.edit_text(text="неверно введены данные\n"+DATA.format(e, p, PAS),
+                                         reply_markup=kb.login_kb())
+        add_db("delete from user_table where tg_id=%s", call.message.chat.id)
+        await LoginState.wait.set()
+        return
+    await state.finish()
     await call.message.edit_text("Данные сохранены\n\n", reply_markup=kb.profile())
 
 

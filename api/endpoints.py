@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 import httpx
+import db.db as db
+
 
 app = FastAPI()
 
@@ -12,18 +14,28 @@ class LoginData(BaseModel):
     device: str
 
 
-@app.post("/get-access-token/")
+
+# @app.post("/get-access-token/")
 async def get_access_token(login_data: LoginData):
-    url = "https://mc.dev.rand.agency/api/v1/get-access-token"
+    url = "https://mc.dev.rand.agency/api/v1/get-access-token/"
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json;charset=UTF-8"
     }
+    data = {
+        'email': login_data.email,
+        'password': login_data.password,
+        'device': login_data.device
+    }
     async with httpx.AsyncClient() as client:
-        response = await client.post(url, json=login_data.dict(), headers=headers)
+        response = await client.post(url, json=data, headers=headers)
         if response.status_code != 200:
-            raise HTTPException(status_code=response.status_code, detail=response.text)
-        return response.json()
+            return "error"
+        access_token = response.json()['access_token']
+        print(access_token)
+        db.add_db("UPDATE user_table SET token=%s WHERE id=%s",
+                  access_token, db.search_id_user_by_email(data["email"]))
+        return "true"
 
 
 # ==================================== поиск страницы

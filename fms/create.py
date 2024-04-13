@@ -40,8 +40,8 @@ async def update_keyboard(state: FSMContext):
         call = data['callback']
         if sum([1 if i != "None" else 0 for i in [n, s, f, b, d, p]]) == 6:
             tt = kb.creat_kb()
-            b = datetime.strptime(b, '%d/%m/%Y')
-            d = datetime.strptime(d, '%d/%m/%Y')
+            b = datetime.strptime(b, '%d/%m/%Y').strftime('%m-%d-%Y')
+            d = datetime.strptime(d, '%d/%m/%Y').strftime('%m-%d-%Y')
             tt.add(InlineKeyboardButton(text='все верно', callback_data="pr_ok"))
             await call.message.edit_text(text="проверьте введенные данные и если все "
                                               "верно нажмите на соответсвующую кнопку \n\n" +

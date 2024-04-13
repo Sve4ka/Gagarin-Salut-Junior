@@ -51,6 +51,8 @@ def answer_bd(text: str, *args) -> list:
     return answer
 
 
+def search_id_user_by_email(email: str) -> int:
+    return answer_bd("select * from user_table where email=%s", email)[0][0]
 def add_user(id_user: int, phone: str, email: str) -> None:
     sql_query = "insert into user_table values (%s, %s, %s, %s)"
     add_db(sql_query, free_user_id(), id_user, phone, email)

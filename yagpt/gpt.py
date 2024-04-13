@@ -93,7 +93,7 @@ def bio(text, name):
             )
         )
     res = resp.json()['result']['alternatives'][-1]['message']['text']
-    with open('yagpt/json/ref.json', 'r', encoding='utf-8') as f:
+    with open('yagpt/json/ref_b.json', 'r', encoding='utf-8') as f:
         ref = json.load(f)
     f.close()
     main['messages'] = ref
