@@ -14,7 +14,9 @@ def db_start():
                 "tg_id INTEGER,"
                 "telephone VARCHAR(15), "
                 "email VARCHAR(25),"
-                "password VARCHAR(25))")
+                "password VARCHAR(25)), "
+                "token VARCHAR(200),"
+                "url_conn VARCHAR(300)")
     conn.commit()
 
 
@@ -82,6 +84,7 @@ def search_id_user(id_user: int) -> int:
     return users[0][0]
 
 
+
 def search_id_dead(id_user: int) -> int:
     users = answer_bd("SELECT * FROM dead_table WHERE cr_id=%s", search_id_user(id_user))
     if len(users) == 0:
@@ -90,3 +93,9 @@ def search_id_dead(id_user: int) -> int:
 
 def ret_data_dead(id: int) -> tuple:
     return answer_bd("select * from dead_table where id=%s", id)
+
+
+def search_id_user_by_email(email: str) -> tuple:
+    return answer_bd("select * from user_table where email=%s", email)[0][0]
+
+# def get_token(id_user: int) -> str:
