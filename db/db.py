@@ -13,7 +13,8 @@ def db_start():
                 "id SERIAL PRIMARY KEY, "
                 "tg_id INTEGER,"
                 "telephone VARCHAR(15), "
-                "email VARCHAR(25))")
+                "email VARCHAR(25),"
+                "password VARCHAR(25))")
     conn.commit()
 
 
@@ -26,7 +27,8 @@ def db_deader():
                 "surname VARCHAR(35),"
                 "fathname VARCHAR(35), "
                 "birth date,"
-                "dead date)")
+                "dead date,"
+                "photo BYTEA)")
     conn.commit()
 
 
@@ -79,3 +81,12 @@ def search_id_user(id_user: int) -> int:
         return 0
     return users[0][0]
 
+
+def search_id_dead(id_user: int) -> int:
+    users = answer_bd("SELECT * FROM dead_table WHERE cr_id=%s", search_id_user(id_user))
+    if len(users) == 0:
+        return 0
+    return users[-1][0]
+
+def ret_data_dead(id: int) -> tuple:
+    return answer_bd("select * from dead_table where id=%s", id)
