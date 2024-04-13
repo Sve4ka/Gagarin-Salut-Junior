@@ -17,7 +17,8 @@ async def on_startup(_):
 
 @dp.message_handler()
 async def echo_upper(message: types.Message):
-    if (message.reply_to_message is not None and message.reply_to_message['from']['id'] == 6998740889):
+    # print(message.reply_to_message['from'])
+    if message.reply_to_message is not None and message.reply_to_message['from']['id'] == 7035202829:
         await message.reply(yagpt.gpt.epi(message.text))
 
 

@@ -31,6 +31,32 @@ def q_kb() -> InlineKeyboardMarkup:
     return kb
 
 
+def epi_and_bio() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardMarkup(resize_keyboard=True, row_width=2)
+    button = InlineKeyboardButton("epi", callback_data="epi")
+    kb.add(button)
+    button = InlineKeyboardButton("bio", callback_data="bio")
+    kb.add(button)
+    return kb
+
+
+def epi() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardMarkup(resize_keyboard=True, row_width=2)
+    button = InlineKeyboardButton("new epi", callback_data="epi")
+    kb.add(button)
+    button = InlineKeyboardButton("use tham", callback_data="epi_and_bio")
+    kb.add(button)
+    return kb
+
+
+def bio() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardMarkup(resize_keyboard=True, row_width=2)
+    button = InlineKeyboardButton("new bio", callback_data="bio")
+    kb.add(button)
+    button = InlineKeyboardButton("use tham", callback_data="epi_and_bio")
+    kb.add(button)
+    return kb
+
 
 def ret_prof_kb() -> InlineKeyboardMarkup:
     kb = InlineKeyboardMarkup(resize_keyboard=True, row_width=2)
@@ -54,8 +80,9 @@ def creat_kb() -> InlineKeyboardMarkup:
     b3 = InlineKeyboardButton(text="отчество", callback_data="fathname_cr")
     b4 = InlineKeyboardButton(text="дата рождения", callback_data="birth_cr")
     b5 = InlineKeyboardButton(text="дата смерти", callback_data="dead_cr")
-    button = InlineKeyboardButton("cancel", callback_data="ret_prof")
-    kb.add(b1).add(b2).add(b3).add(b4).add(b5)
+    b6 = InlineKeyboardButton(text="фото", callback_data="photo_cr")
+    button = InlineKeyboardButton("cancel", callback_data="ret_start")
+    kb.add(b1).add(b2).add(b3).add(b4).add(b5).add(b6).add(button)
     return kb
 
 
