@@ -11,11 +11,13 @@ from keyboard import creat_kb as kb
 
 DATA_CR = """
 введите данные человека
-Фамилия        = {}
-Имя            = {}
-Отчество       = {}
-Дата рождения  = {}
-Дата смерти    = {}
+Фамилия         = {}
+Имя             = {}
+Отчество        = {}
+Дата рождения   = {}
+Дата смерти     = {}
+Место рождения  = {}
+Место смерти    = {}
 """
 
 
@@ -25,6 +27,8 @@ class CreatState(StatesGroup):
     fathname = State()
     birth = State()
     dead = State()
+    birth_p = State()
+    dead_p = State()
     wait = State()
     photo = State()
 
@@ -34,30 +38,29 @@ async def update_keyboard(state: FSMContext):
         n = data['name']
         s = data['surname']
         f = data['fathname']
-        b = data['birth']
-        d = data['dead']
+        pb = data['birth']
+        pd = data['dead']
+        b = data['birth_p']
+        d = data['dead_p']
         p = data['photo']
         call = data['callback']
-        if sum([1 if i != "None" else 0 for i in [n, s, f, b, d, p]]) == 6:
+        if sum([1 if i != "None" else 0 for i in [n, s, f, b, d, p, pb, pd]]) == 8:
             tt = kb.creat_kb()
-            b = datetime.strptime(b, '%d/%m/%Y')
-            d = datetime.strptime(d, '%d/%m/%Y')
-            tt.add(InlineKeyboardButton(text='все верно', callback_data="pr_ok"))
-            await call.message.edit_text(text="проверьте введенные данные и если все "
-                                              "верно нажмите на соответсвующую кнопку \n\n" +
-                                              DATA_CR.format(s, n, f, b, d),
+            tt.add(InlineKeyboardButton(text='Все верно', callback_data="pr_ok"))
+            await call.message.edit_text(text="Проверьте введенные данные и, если все "
+                                              "верно, нажмите на соответсвующую кнопку \n\n" +
+                                              DATA_CR.format(s, n, f, b, d, pb, pd),
                                          reply_markup=tt)
         else:
             if b == "None":
                 b = "xx/xx/xxxx"
             if d == "None":
                 d = "xx/xx/xxxx"
-            await call.message.edit_text(DATA_CR.format(s, n, f, b, d), reply_markup=kb.creat_kb())
+            await call.message.edit_text(DATA_CR.format(s, n, f, b, d, pb, pd), reply_markup=kb.creat_kb())
 
 
 @dp.callback_query_handler(text='profile', state="*")
 async def new_fr(call: types.CallbackQuery, state: FSMContext):
-    pprint(call)
     await state.update_data(name="None")
     await state.update_data(surname="None")
     await state.update_data(fathname="None")
@@ -71,7 +74,7 @@ async def new_fr(call: types.CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(text='name_cr', state="*")
 async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
-    await call.message.edit_text("введите имя", reply_markup=kb.ret_prof_kb())
+    await call.message.edit_text("Введите имя", reply_markup=kb.ret_prof_kb())
     await CreatState.name.set()
 
 
@@ -83,25 +86,37 @@ async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(text='surname_cr', state="*")
 async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
-    await call.message.edit_text("введите фамилию", reply_markup=kb.ret_prof_kb())
+    await call.message.edit_text("Введите фамилию", reply_markup=kb.ret_prof_kb())
     await CreatState.surname.set()
 
 
 @dp.callback_query_handler(text='fathname_cr', state="*")
 async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
-    await call.message.edit_text("введите отчество", reply_markup=kb.ret_prof_kb())
+    await call.message.edit_text("Введите отчество", reply_markup=kb.ret_prof_kb())
     await CreatState.fathname.set()
 
 
 @dp.callback_query_handler(text='birth_cr', state="*")
 async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
-    await call.message.edit_text("введите рождение, в формате дд/мм/гггг", reply_markup=kb.ret_prof_kb())
+    await call.message.edit_text("Введите дату рождения, в формате дд/мм/гггг", reply_markup=kb.ret_prof_kb())
     await CreatState.birth.set()
 
 
 @dp.callback_query_handler(text='dead_cr', state="*")
 async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
-    await call.message.edit_text("введите смерти, в формате дд/мм/гггг", reply_markup=kb.ret_prof_kb())
+    await call.message.edit_text("Введите дату смерти, в формате дд/мм/гггг", reply_markup=kb.ret_prof_kb())
+    await CreatState.dead.set()
+
+
+@dp.callback_query_handler(text='birth_p_cr', state="*")
+async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
+    await call.message.edit_text("Введите место рождения", reply_markup=kb.ret_prof_kb())
+    await CreatState.birth.set()
+
+
+@dp.callback_query_handler(text='dead_p_cr', state="*")
+async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
+    await call.message.edit_text("Введите место смерти", reply_markup=kb.ret_prof_kb())
     await CreatState.dead.set()
 
 
@@ -130,14 +145,19 @@ async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
         f = data['fathname']
         b = data['birth']
         d = data['dead']
+        pd = data['dead_p']
+        pb = data['birth_p']
         photo = data['photo']
         p = data['ph_call']
     await state.finish()
+    await state.update_data(child="None")
+    await state.update_data(marry="None")
+    await state.update_data(hone="None")
+    await state.update_data(callback=call)
     await p.delete()
-    add_deader(call.message.chat.id, n, s, f, b, d)
-    await call.message.edit_text("Данные сохранены\n\n перейдем в создание эпитафии и биографии, "
-                                 "для этого вам необходимо ответить хотябы на 5 вопросов",
-                                 reply_markup=kb.q_kb())
+    add_deader(call.message.chat.id, n, s, f, b, d, pd, pb)
+    await call.message.edit_text("Данные сохранены\n\n",
+                                 reply_markup=kb.que1())
 
 
 @dp.message_handler(state=CreatState.name)
