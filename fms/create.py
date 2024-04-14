@@ -6,16 +6,18 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import InlineKeyboardButton
 
 from command import dp, bot
-from db.db import add_deader
+from db.db import add_deader, free_deader_id
 from keyboard import creat_kb as kb
 
 DATA_CR = """
-введите данные человека
+Введите данные человека
 Фамилия        = {}
 Имя            = {}
 Отчество       = {}
 Дата рождения  = {}
 Дата смерти    = {}
+Место рождения = {}
+Место смерти   = {}
 """
 
 
@@ -25,6 +27,8 @@ class CreatState(StatesGroup):
     fathname = State()
     birth = State()
     dead = State()
+    birth_place = State()
+    death_place = State()
     wait = State()
     photo = State()
 
@@ -36,33 +40,35 @@ async def update_keyboard(state: FSMContext):
         f = data['fathname']
         b = data['birth']
         d = data['dead']
+        pb = data['birth_place']
+        pd = data['death_place']
         p = data['photo']
         call = data['callback']
-        if sum([1 if i != "None" else 0 for i in [n, s, f, b, d, p]]) == 6:
+        if sum([1 if i != "None" else 0 for i in [n, s, f, b, d, p, pb, pd]]) == 8:
             tt = kb.creat_kb()
-            b = datetime.strptime(b, '%d/%m/%Y').strftime('%m-%d-%Y')
-            d = datetime.strptime(d, '%d/%m/%Y').strftime('%m-%d-%Y')
             tt.add(InlineKeyboardButton(text='все верно', callback_data="pr_ok"))
             await call.message.edit_text(text="проверьте введенные данные и если все "
                                               "верно нажмите на соответсвующую кнопку \n\n" +
-                                              DATA_CR.format(s, n, f, b, d),
+                                              DATA_CR.format(s, n, f, b, d, pb, pd),
                                          reply_markup=tt)
         else:
             if b == "None":
                 b = "xx/xx/xxxx"
             if d == "None":
                 d = "xx/xx/xxxx"
-            await call.message.edit_text(DATA_CR.format(s, n, f, b, d), reply_markup=kb.creat_kb())
+            await call.message.edit_text(DATA_CR.format(s, n, f, b, d, pb, pd), reply_markup=kb.creat_kb())
 
 
 @dp.callback_query_handler(text='profile', state="*")
 async def new_fr(call: types.CallbackQuery, state: FSMContext):
-    pprint(call)
     await state.update_data(name="None")
     await state.update_data(surname="None")
     await state.update_data(fathname="None")
     await state.update_data(birth="None")
     await state.update_data(dead="None")
+    await state.update_data(birthp="None")
+    await state.update_data(deadp="None")
+
     await state.update_data(photo="None")
     await state.update_data(ph_call="None")
     await state.update_data(callback=call)
@@ -89,19 +95,31 @@ async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(text='fathname_cr', state="*")
 async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
-    await call.message.edit_text("введите отчество", reply_markup=kb.ret_prof_kb())
+    await call.message.edit_text("введите отчество, при остутсвии введите -", reply_markup=kb.ret_prof_kb())
     await CreatState.fathname.set()
 
 
 @dp.callback_query_handler(text='birth_cr', state="*")
 async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
-    await call.message.edit_text("введите рождение, в формате дд/мм/гггг", reply_markup=kb.ret_prof_kb())
+    await call.message.edit_text("введите дату рождения, в формате дд/мм/гггг", reply_markup=kb.ret_prof_kb())
     await CreatState.birth.set()
 
 
 @dp.callback_query_handler(text='dead_cr', state="*")
 async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
-    await call.message.edit_text("введите смерти, в формате дд/мм/гггг", reply_markup=kb.ret_prof_kb())
+    await call.message.edit_text("введите дату смерти, в формате дд/мм/гггг", reply_markup=kb.ret_prof_kb())
+    await CreatState.dead.set()
+
+
+@dp.callback_query_handler(text='birth_pl_cr', state="*")
+async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
+    await call.message.edit_text("введите место рождение", reply_markup=kb.ret_prof_kb())
+    await CreatState.birth.set()
+
+
+@dp.callback_query_handler(text='dead_pl_cr', state="*")
+async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
+    await call.message.edit_text("введите место смерти", reply_markup=kb.ret_prof_kb())
     await CreatState.dead.set()
 
 
@@ -121,7 +139,6 @@ async def new_cancel(call: types.CallbackQuery, state: FSMContext):
     await call.message.edit_text("Главное меню", reply_markup=kb.profile())
 
 
-
 @dp.callback_query_handler(text='pr_ok', state="*")
 async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as data:
@@ -132,9 +149,12 @@ async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
         d = data['dead']
         photo = data['photo']
         p = data['ph_call']
+
+    b = datetime.strptime(b, '%d/%m/%Y').date()
+    d = datetime.strptime(d, '%d/%m/%Y').date()
     await state.finish()
     await p.delete()
-    add_deader(call.message.chat.id, n, s, f, b, d)
+    add_deader(call.message.chat.id, n, s, f, b, d, photo)
     await call.message.edit_text("Данные сохранены\n\n перейдем в создание эпитафии и биографии, "
                                  "для этого вам необходимо ответить хотябы на 5 вопросов",
                                  reply_markup=kb.q_kb())
@@ -143,7 +163,7 @@ async def inl_new_fr_name(call: types.CallbackQuery, state: FSMContext):
 @dp.message_handler(state=CreatState.name)
 async def price_state(message: types.Message, state: FSMContext):
     ph = message.text.lower()
-    await state.update_data(name=ph)
+    await state.update_data(name=ph.capitalize())
     await update_keyboard(state)
     await message.delete()
     await state.set_state(CreatState.wait.state)
@@ -152,7 +172,7 @@ async def price_state(message: types.Message, state: FSMContext):
 @dp.message_handler(state=CreatState.surname)
 async def price_state(message: types.Message, state: FSMContext):
     ph = message.text.lower()
-    await state.update_data(surname=ph)
+    await state.update_data(surname=ph.capitalize())
     await update_keyboard(state)
     await message.delete()
     await state.set_state(CreatState.wait.state)
@@ -161,7 +181,7 @@ async def price_state(message: types.Message, state: FSMContext):
 @dp.message_handler(state=CreatState.fathname)
 async def price_state(message: types.Message, state: FSMContext):
     ph = message.text.lower()
-    await state.update_data(fathname=ph)
+    await state.update_data(fathname=ph.capitalize())
     await update_keyboard(state)
     await message.delete()
     await state.set_state(CreatState.wait.state)
@@ -169,8 +189,17 @@ async def price_state(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=CreatState.birth)
 async def price_state(message: types.Message, state: FSMContext):
-    ph = message.text.lower()
-    await state.update_data(birth=ph)
+    date = message.text.lower()
+    try:
+        valid_date = datetime.strptime(date, '%d/%m/%Y')
+    except:
+        await message.delete()
+        return
+    get_date = lambda d: datetime.strptime(d, '%d.%m.%Y').date() <= datetime.today().date()
+    if not get_date(date):
+        await message.delete()
+        return
+    await state.update_data(birth=date)
     await update_keyboard(state)
     await message.delete()
     await state.set_state(CreatState.wait.state)
@@ -178,8 +207,14 @@ async def price_state(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=CreatState.dead)
 async def price_state(message: types.Message, state: FSMContext):
-    em = message.text.lower()
-    await state.update_data(dead=em)
+    date = message.text.lower()
+    try:
+        valid_date = datetime.strptime(date, '%d/%m/%Y')
+    except:
+        await message.delete()
+        return
+    get_date = lambda d: datetime.strptime(d, '%d.%m.%Y').date() <= datetime.today().date()
+    await state.update_data(dead=date)
     await update_keyboard(state)
     await message.delete()
     await state.set_state(CreatState.wait.state)
@@ -187,10 +222,10 @@ async def price_state(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=CreatState.photo, content_types=types.ContentType.PHOTO)
 async def price_state(message: types.Message, state: FSMContext):
-    em = message.photo[-1].file_id
-    ph_call = await bot.send_photo(message.chat.id, em)
+    await message.photo[-1].download(destination_file="./photo/" + str(free_deader_id()) + '.jpg')
+    ph_call = await bot.send_photo(message.chat.id, message.photo[-1].file_id)
     await state.update_data(ph_call=ph_call)
-    await state.update_data(photo=em)
+    await state.update_data(photo="./photo/" + str(free_deader_id()) + '.jpg')
     await update_keyboard(state)
     await message.delete()
     await state.set_state(CreatState.wait.state)

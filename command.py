@@ -19,8 +19,3 @@ async def command_start(message: types.Message):
         await message.answer(text=text.START3, reply_markup=kb.profile())
     await message.delete()
 
-#
-# @dp.message_handler(commands=['help'])
-# async def command_help(message: types.Message):
-#     await message.answer(HELP, parse_mode='HTML')
-#     await message.delete()

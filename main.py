@@ -3,13 +3,14 @@ from time import time
 from aiogram import executor, types
 from aiogram.types import ReplyKeyboardRemove
 from aiogram import Bot, Dispatcher, types
-import fms.login, fms.create, fms.question
 import db.db
 from config import TOKEN_API
 import yagpt.gpt
 from yagpt.gpt import epi
-from command import dp
+from tmp import dp
 from db.db import db_start, db_deader
+import tmp
+
 
 async def on_startup(_):
     print("HI, i work")

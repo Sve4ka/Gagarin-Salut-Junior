@@ -65,11 +65,13 @@ def ret_prof_kb() -> InlineKeyboardMarkup:
     return kb
 
 
-def profile() -> InlineKeyboardMarkup:
+def profile(count: int) -> InlineKeyboardMarkup:
     kb = InlineKeyboardMarkup(resize_keyboard=True, row_width=2)
-    button = InlineKeyboardButton("рандомная страничка", url="https://memorycode.ru/page/35984242")
-    button1 = InlineKeyboardButton("Создать свою страничку", callback_data="profile")
-    kb.add(button).add(button1)
+    button = InlineKeyboardButton("Рандомная страница", url="https://memorycode.ru/page/35984242")
+    for i in range(count):
+        b = InlineKeyboardButton("Страница " + str(i + 1), callback_data="profile_" + str(i))
+        kb.add(b)
+    kb.add(button)
     return kb
 
 
@@ -80,9 +82,11 @@ def creat_kb() -> InlineKeyboardMarkup:
     b3 = InlineKeyboardButton(text="отчество", callback_data="fathname_cr")
     b4 = InlineKeyboardButton(text="дата рождения", callback_data="birth_cr")
     b5 = InlineKeyboardButton(text="дата смерти", callback_data="dead_cr")
+    b4 = InlineKeyboardButton(text="место рождения", callback_data="birth_pl_cr")
+    b5 = InlineKeyboardButton(text="место смерти", callback_data="dead_pl_cr")
     b6 = InlineKeyboardButton(text="фото", callback_data="photo_cr")
     button = InlineKeyboardButton("cancel", callback_data="ret_start")
-    kb.add(b1).add(b2).add(b3).add(b4).add(b5).add(b6).add(button)
+    kb.add(b2).add(b1).add(b3).add(b4).add(b5).add(b6).add(button)
     return kb
 
 
