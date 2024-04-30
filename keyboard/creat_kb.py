@@ -34,8 +34,15 @@ def epi_and_bio() -> InlineKeyboardMarkup:
     kb = InlineKeyboardMarkup(resize_keyboard=True, row_width=2)
     button = InlineKeyboardButton("Эпитафии", callback_data="epi")
     kb.add(button)
-    button = InlineKeyboardButton("Биографии", callback_data="bio")
+    button = InlineKeyboardButton("Биография1 - детсво", callback_data="bio1.json")
     kb.add(button)
+    button = InlineKeyboardButton("Биография2 - семья", callback_data="bio2")
+    kb.add(button)
+    button = InlineKeyboardButton("Биография3 - карьера", callback_data="bio3")
+    kb.add(button)
+    button = InlineKeyboardButton("Биография4 - заключение", callback_data="bio4")
+    kb.add(button)
+
     return kb
 
 
@@ -48,7 +55,31 @@ def epi() -> InlineKeyboardMarkup:
     return kb
 
 
-def bio() -> InlineKeyboardMarkup:
+def bio1() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardMarkup(resize_keyboard=True, row_width=2)
+    button = InlineKeyboardButton("Новая биография", callback_data="bio")
+    kb.add(button)
+    button = InlineKeyboardButton("Использовать эту", callback_data="epi_and_bio")
+    kb.add(button)
+    return kb
+
+def bio2() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardMarkup(resize_keyboard=True, row_width=2)
+    button = InlineKeyboardButton("Новая биография", callback_data="bio")
+    kb.add(button)
+    button = InlineKeyboardButton("Использовать эту", callback_data="epi_and_bio")
+    kb.add(button)
+    return kb
+
+def bio3() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardMarkup(resize_keyboard=True, row_width=2)
+    button = InlineKeyboardButton("Новая биография", callback_data="bio")
+    kb.add(button)
+    button = InlineKeyboardButton("Использовать эту", callback_data="epi_and_bio")
+    kb.add(button)
+    return kb
+
+def bio4() -> InlineKeyboardMarkup:
     kb = InlineKeyboardMarkup(resize_keyboard=True, row_width=2)
     button = InlineKeyboardButton("Новая биография", callback_data="bio")
     kb.add(button)
@@ -81,11 +112,11 @@ def creat_kb() -> InlineKeyboardMarkup:
     b3 = InlineKeyboardButton(text="Отчество", callback_data="fathname_cr")
     b4 = InlineKeyboardButton(text="Дата рождения", callback_data="birth_cr")
     b5 = InlineKeyboardButton(text="Дата смерти", callback_data="dead_cr")
-    b4 = InlineKeyboardButton(text="Место рождения", callback_data="birth_p_cr")
-    b5 = InlineKeyboardButton(text="Место смерти", callback_data="dead_p_cr")
+    b7 = InlineKeyboardButton(text="Место рождения", callback_data="birth_p_cr")
+    b8 = InlineKeyboardButton(text="Место смерти", callback_data="dead_p_cr")
     b6 = InlineKeyboardButton(text="Фото", callback_data="photo_cr")
     button = InlineKeyboardButton("Cancel", callback_data="ret_start")
-    kb.add(b2).add(b1).add(b3).add(b4).add(b5).add(b6).add(button)
+    kb.add(b2).add(b1).add(b3).add(b4).add(b5).add(b7).add(b8).add(b6).add(button)
     return kb
 
 
@@ -96,6 +127,17 @@ def question() -> InlineKeyboardMarkup:
     kb.add(button2, button1)
     return kb
 
+def next_q1(nn) -> InlineKeyboardMarkup:
+    kb = InlineKeyboardMarkup(resize_keyboard=True, row_width=2)
+    b = InlineKeyboardButton(text="Семейное положение", callback_data="next_q1_"+str(nn))
+    kb.add(b)
+    return kb
+
+def next_q2(nn) -> InlineKeyboardMarkup:
+    kb = InlineKeyboardMarkup(resize_keyboard=True, row_width=2)
+    b = InlineKeyboardButton(text="Проффесиональные навыки", callback_data="next_q2_"+str(nn))
+    kb.add(b)
+    return kb
 
 def que1() -> InlineKeyboardMarkup:
     kb = InlineKeyboardMarkup(resize_keyboard=True, row_width=2)
@@ -105,6 +147,14 @@ def que1() -> InlineKeyboardMarkup:
     kb.add(b1).add(b2).add(b3)
     return kb
 
+
+def que2() -> InlineKeyboardMarkup:
+    kb = InlineKeyboardMarkup(resize_keyboard=True, row_width=2)
+    b1 = InlineKeyboardButton(text="Образование", callback_data="learn_k")
+    b2 = InlineKeyboardButton(text="Род деятельности", callback_data="prof_k")
+    b3 = InlineKeyboardButton(text="Награды", callback_data="prise_k")
+    kb.add(b1).add(b2).add(b3)
+    return kb
 
 def question_2() -> InlineKeyboardMarkup:
     kb = InlineKeyboardMarkup(resize_keyboard=True, row_width=2)

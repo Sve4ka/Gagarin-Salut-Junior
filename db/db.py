@@ -59,7 +59,9 @@ def add_user(id_user: int, phone: str, email: str) -> None:
 
 
 def add_deader(*args):
-    sql_query = "insert into dead_table values (%s, %s, %s, %s, %s, %s, %s)"
+
+    sql_query = "insert into dead_table values (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    print(args)
     add_db(sql_query, free_deader_id(), search_id_user(args[0]), *args[1:])
 
 

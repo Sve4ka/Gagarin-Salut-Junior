@@ -3,7 +3,7 @@ from time import time
 from aiogram import executor, types
 from aiogram.types import ReplyKeyboardRemove
 from aiogram import Bot, Dispatcher, types
-import fms.login, fms.create, fms.question
+import fms.login, fms.create, fms.question, fms.que1, fms.que2
 import db.db
 from config import TOKEN_API
 import yagpt.gpt

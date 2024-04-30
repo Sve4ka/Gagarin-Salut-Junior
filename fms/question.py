@@ -10,10 +10,7 @@ import yagpt.gpt
 
 # TODO скипать и возвращаться к вопросам
 
-QQ = ["С кем он был близок", "Расскажите про его профессию", "где он учился",
-      "что было важно для него", "чем он увлекался", "Место рождения почившего",
-      "Образование", "Место работы", "Место смерти",
-      "Характер", "Отношения с близкими", "Любимые хобби", "Яркое воспоминание"]
+QQ = ["Воспоминание из детства этого человека", "Воспоминание, связанное с семьей", "Отношение к работе"]
 
 SIZE = len(QQ)
 
@@ -48,7 +45,7 @@ async def next_fr(call: types.CallbackQuery, state: FSMContext):
         q = QQ[qq[num]]
         a = data['answer']
     print(a)
-    if len(qq) == SIZE - 5:
+    if len(qq) == 0:
         kb_ = kb.question_2()
         await state.update_data(kb=kb_)
 
@@ -80,7 +77,6 @@ async def next_fr(call: types.CallbackQuery, state: FSMContext):
         aa = data['answer']
     await QuestionState.epi_bio.set()
     await epi_bio(state, call.from_user.id)
-
     await call.message.edit_text("\n".join([" - ".join(i) for i in aa]), reply_markup=kb.epi_and_bio())
 
 
@@ -113,7 +109,10 @@ async def price_state(message: types.Message, state: FSMContext):
 async def epi_bio(state: FSMContext, id):
     await state.update_data(dead=db.search_id_dead(id))
     await state.update_data(epi="")
-    await state.update_data(bio="")
+    await state.update_data(bio1="")
+    await state.update_data(bio2="")
+    await state.update_data(bio3="")
+    await state.update_data(bio4="")
 
 
 @dp.callback_query_handler(text='epi_and_bio', state="*")
@@ -139,16 +138,65 @@ async def next_fr(call: types.CallbackQuery, state: FSMContext):
     await QuestionState.question.set()
 
 
-@dp.callback_query_handler(text='bio', state="*")
+@dp.callback_query_handler(text='bio1.json', state="*")
 async def next_fr(call: types.CallbackQuery, state: FSMContext):
     async with state.proxy() as data:
         aa = data['answer']
     fio = db.ret_data_dead(db.search_id_dead(call.message.chat.id))[0]
     tt = "Обработка информации"
-    await call.message.edit_text(tt, reply_markup=kb.bio())
-    tt = yagpt.gpt.bio("\n".join([" - ".join(i) for i in aa]),  fio[2] + " " + fio[3] + " " + fio[4])
-    await call.message.edit_text(tt, reply_markup=kb.bio())
-    await state.update_data(bio=tt)
+    await call.message.edit_text(tt, reply_markup=kb.bio1())
+    tt = yagpt.gpt.bio1("\n".join([" - ".join(i) for i in aa]),  ' '.join(fio))
+    await call.message.edit_text(tt, reply_markup=kb.bio1())
+    await state.update_data(bio1=tt)
     # await call.message.edit_text(q, reply_markup=kb_)
     await QuestionState.question.set()
+
+
+
+@dp.callback_query_handler(text='bio2', state="*")
+async def next_fr(call: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        aa = data['answer']
+    fio = db.ret_data_dead(db.search_id_dead(call.message.chat.id))[0]
+    tt = "Обработка информации"
+    await call.message.edit_text(tt, reply_markup=kb.bio2())
+    tt = yagpt.gpt.bio2("\n".join([" - ".join(i) for i in aa]),   ' '.join(fio))
+    await call.message.edit_text(tt, reply_markup=kb.bio2())
+    await state.update_data(bio2=tt)
+    # await call.message.edit_text(q, reply_markup=kb_)
+    await QuestionState.question.set()
+
+
+@dp.callback_query_handler(text='bio3', state="*")
+async def next_fr(call: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        aa = data['answer']
+    fio = db.ret_data_dead(db.search_id_dead(call.message.chat.id))[0]
+    tt = "Обработка информации"
+    await call.message.edit_text(tt, reply_markup=kb.bio3())
+    tt = yagpt.gpt.bio3("\n".join([" - ".join(i) for i in aa]),  ' '.join(fio))
+    await call.message.edit_text(tt, reply_markup=kb.bio3())
+    await state.update_data(bio3=tt)
+    # await call.message.edit_text(q, reply_markup=kb_)
+    await QuestionState.question.set()
+
+
+@dp.callback_query_handler(text='bio4', state="*")
+async def next_fr(call: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        aa = data['answer']
+    fio = db.ret_data_dead(db.search_id_dead(call.message.chat.id))[0]
+    tt = "Обработка информации"
+    await call.message.edit_text(tt, reply_markup=kb.bio4())
+    tt = yagpt.gpt.bio4("\n".join([" - ".join(i) for i in aa]),   ' '.join(fio))
+    await call.message.edit_text(tt, reply_markup=kb.bio4())
+    await state.update_data(bio4=tt)
+    # await call.message.edit_text(q, reply_markup=kb_)
+    await QuestionState.question.set()
+
+
+@dp.callback_query_handler(text='bio5', state="*")
+async def next_fr(call: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        aa = data['answer']
 
